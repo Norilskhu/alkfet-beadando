@@ -1,0 +1,137 @@
+<div class="page">
+  <div class="page-header">
+    <h1>🔐 Gyökér tanúsítványok</h1>
+    <button class="btn btn-primary" (click)="showCreateForm.set(!showCreateForm())">
+      {{ showCreateForm() ? '✕ Mégse' : '+ Új létrehozása' }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (showCreateForm()) {
+    <div class="card form-card">
+      <h2>Új gyökér tanúsítvány (self-signed)</h2>
+      <form [formGroup]="createForm" (ngSubmit)="onCreate()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Common Name (CN) *</label>
+            <input formControlName="commonName" placeholder="pl. My Root CA" />
+            @if (createForm.get('commonName')?.invalid && createForm.get('commonName')?.touched) {
+              <span class="field-error">Kötelező mező</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Szervezet (O) *</label>
+            <input formControlName="organization" placeholder="pl. My Organization" />
+            @if (createForm.get('organization')?.invalid && createForm.get('organization')?.touched) {
+              <span class="field-error">Kötelező mező</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Szervezeti egység (OU)</label>
+            <input formControlName="organizationalUnit" placeholder="pl. IT Department" />
+          </div>
+          <div class="form-group">
+            <label>Ország (C) *</label>
+            <input formControlName="country" placeholder="HU" maxlength="2" />
+            @if (createForm.get('country')?.invalid && createForm.get('country')?.touched) {
+              <span class="field-error">2 karakteres országkód szükséges</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Állam / Megye (ST)</label>
+            <input formControlName="state" placeholder="pl. Budapest" />
+          </div>
+          <div class="form-group">
+            <label>Helység (L)</label>
+            <input formControlName="locality" placeholder="pl. Budapest" />
+          </div>
+          <div class="form-group">
+            <label>Érvényesség (napokban) *</label>
+            <input type="number" formControlName="validityDays" min="1" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="createForm.invalid || creating()">
+            {{ creating() ? 'Létrehozás...' : 'Létrehozás' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="showCreateForm.set(false)">Mégse</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Betöltés...</div>
+  } @else if (page().content.length === 0) {
+    <div class="empty-state">
+      <p>Még nincs gyökér tanúsítvány. Hozzon létre egyet!</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Common Name</th>
+            <th>Szervezet</th>
+            <th>Sorozatszám</th>
+            <th>Érvényes től</th>
+            <th>Érvényes ig</th>
+            <th>Státusz</th>
+            <th>Műveletek</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cert of page().content; track cert.id) {
+            <tr [class.expired]="isExpired(cert.validTo)">
+              <td><strong>{{ cert.commonName }}</strong></td>
+              <td>{{ cert.organization }}</td>
+              <td><code>{{ cert.serialNumber }}</code></td>
+              <td>{{ cert.validFrom | date:'yyyy-MM-dd' }}</td>
+              <td>{{ cert.validTo | date:'yyyy-MM-dd' }}</td>
+              <td>
+                <span class="badge" [class.badge-ok]="!isExpired(cert.validTo)" [class.badge-expired]="isExpired(cert.validTo)">
+                  {{ isExpired(cert.validTo) ? 'Lejárt' : 'Érvényes' }}
+                </span>
+              </td>
+              <td class="actions">
+                <button class="btn btn-sm btn-secondary" (click)="onDownload(cert)" title="PEM letöltése">
+                  ⬇ PEM
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="onDelete(cert)" title="Törlés">
+                  🗑
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <span class="pagination-info">
+        {{ page().totalElements }} elem, {{ page().totalPages }} oldal
+      </span>
+      <div class="pagination-controls">
+        <button class="btn btn-sm btn-secondary" [disabled]="page().first" (click)="goToPage(currentPage() - 1)">
+          ‹ Előző
+        </button>
+        @for (p of pages; track p) {
+          <button
+            class="btn btn-sm"
+            [class.btn-primary]="p === currentPage()"
+            [class.btn-secondary]="p !== currentPage()"
+            (click)="goToPage(p)">
+            {{ p + 1 }}
+          </button>
+        }
+        <button class="btn btn-sm btn-secondary" [disabled]="page().last" (click)="goToPage(currentPage() + 1)">
+          Következő ›
+        </button>
+      </div>
+    </div>
+  }
+</div>
+

@@ -1,0 +1,70 @@
+### Base URL
+@baseUrl = http://localhost:8080
+
+###############################################
+### ROOT CERTIFICATES
+###############################################
+
+### [1] Gyökér tanúsítvány létrehozása (self-signed)
+POST {{baseUrl}}/api/v1/root-certificates
+Content-Type: application/json
+
+{
+  "commonName": "My Root CA",
+  "organization": "My Organization",
+  "organizationalUnit": "IT Department",
+  "country": "HU",
+  "state": "Budapest",
+  "locality": "Budapest",
+  "validityDays": 3650
+}
+
+> {%
+  client.global.set("rootCertId", response.body.id);
+%}
+
+### [2] Összes gyökér tanúsítvány listázása (1. oldal, 10 elem)
+GET {{baseUrl}}/api/v1/root-certificates?page=0&size=10
+
+### [3] Összes gyökér tanúsítvány listázása (2. oldal, 5 elem)
+GET {{baseUrl}}/api/v1/root-certificates?page=1&size=5
+
+### [4] Gyökér tanúsítvány lekérdezése ID alapján
+GET {{baseUrl}}/api/v1/root-certificates/{{rootCertId}}
+
+#### [5] Gyökér tanúsítvány törlése
+DELETE {{baseUrl}}/api/v1/root-certificates/{{rootCertId}}
+
+
+###############################################
+### USER CERTIFICATES
+###############################################
+
+### [6] Felhasználói tanúsítvány aláírása és tárolása (CSR feltöltés)
+POST {{baseUrl}}/api/v1/user-certificates
+Content-Type: application/json
+
+{
+  "rootCertificateId": "{{rootCertId}}",
+  "csrPem": "-----BEGIN CERTIFICATE REQUEST-----\nMIICvDCCAaQCAQAwdzELMAkGA1UEBhMCSFUxEjAQBgNVBAgMCUJ1ZGFwZXN0MRII\nMAkGA1UEBwwCSFUxGTAXBgNVBAoMEE15IE9yZ2FuaXphdGlvbjEQMA4GA1UECwwH\nSVQgRGVwdDEVMBMGA1UEAwwMdXNlckBteS5jb20wggEiMA0GCSqGSIb3DQEBAQUA\nA4IBDwAwggEKAoIBAQC7...\n-----END CERTIFICATE REQUEST-----",
+  "validityDays": 365
+}
+
+> {%
+  client.global.set("userCertId", response.body.id);
+%}
+
+### [7] Összes felhasználói tanúsítvány listázása (1. oldal, 10 elem)
+GET {{baseUrl}}/api/v1/user-certificates?page=0&size=10
+
+### [8] Felhasználói tanúsítványok szűrése root cert ID alapján
+GET {{baseUrl}}/api/v1/user-certificates?page=0&size=10&rootCertificateId={{rootCertId}}
+
+### [9] Felhasználói tanúsítvány lekérdezése ID alapján
+GET {{baseUrl}}/api/v1/user-certificates/{{userCertId}}
+
+### [10] Felhasználói tanúsítvány törlése
+DELETE {{baseUrl}}/api/v1/user-certificates/{{userCertId}}
+
+
+

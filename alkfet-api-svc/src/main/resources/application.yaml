@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: alkfet-api-svc
+
+server:
+  port: 8080
+
+app:
+  db-svc:
+    base-url: http://localhost:8081
+
+logging:
+  level:
+    zp.gde.hu: DEBUG
+    org.zalando.logbook.Logbook: TRACE

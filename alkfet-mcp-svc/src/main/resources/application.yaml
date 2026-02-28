@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: alkfet-mcp-svc
+  ai:
+    mcp:
+      server:
+        name: alkfet-mcp-server
+        version: 1.0.0
+
+server:
+  port: 8082
+
+app:
+  db-svc:
+    base-url: http://localhost:8081
+
+logging:
+  level:
+    zp.gde.hu: DEBUG
+    org.zalando.logbook: TRACE

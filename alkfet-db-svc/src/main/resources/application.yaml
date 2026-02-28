@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: alkfet-db-svc
+  data:
+    mongodb:
+      database: alkfet-cert-store
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 7.0.0
+
+server:
+  port: 8081
+
+logging:
+  level:
+    zp.gde.hu: DEBUG
+    org.zalando.logbook: TRACE

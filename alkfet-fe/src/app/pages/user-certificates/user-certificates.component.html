@@ -1,0 +1,129 @@
+<div class="page">
+  <div class="page-header">
+    <h1>👤 Felhasználói tanúsítványok</h1>
+    <button class="btn btn-primary" (click)="showSignForm.set(!showSignForm())">
+      {{ showSignForm() ? '✕ Mégse' : '+ CSR aláírása' }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (showSignForm()) {
+    <div class="card form-card">
+      <h2>CSR aláírása és tárolása</h2>
+      <form [formGroup]="signForm" (ngSubmit)="onSign()">
+        <div class="form-group">
+          <label>Gyökér tanúsítvány *</label>
+          <select formControlName="rootCertificateId">
+            <option value="">— Válasszon gyökér tanúsítványt —</option>
+            @for (root of rootCertificates(); track root.id) {
+              <option [value]="root.id">{{ root.commonName }} ({{ root.organization }})</option>
+            }
+          </select>
+          @if (signForm.get('rootCertificateId')?.invalid && signForm.get('rootCertificateId')?.touched) {
+            <span class="field-error">Kötelező mező</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>CSR fájl feltöltése (.csr / .pem)</label>
+          <input type="file" accept=".csr,.pem,.txt" (change)="onCsrFileSelected($event)" />
+        </div>
+
+        <div class="form-group">
+          <label>CSR tartalom (PEM) *</label>
+          <textarea formControlName="csrPem" rows="8" placeholder="-----BEGIN CERTIFICATE REQUEST-----
+...
+-----END CERTIFICATE REQUEST-----"></textarea>
+          @if (signForm.get('csrPem')?.invalid && signForm.get('csrPem')?.touched) {
+            <span class="field-error">Kötelező mező</span>
+          }
+        </div>
+
+        <div class="form-group form-group-narrow">
+          <label>Érvényesség (napokban) *</label>
+          <input type="number" formControlName="validityDays" min="1" />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="signForm.invalid || signing()">
+            {{ signing() ? 'Aláírás folyamatban...' : '✔ Aláírás és tárolás' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="showSignForm.set(false)">Mégse</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Betöltés...</div>
+  } @else if (page().content.length === 0) {
+    <div class="empty-state">
+      <p>Még nincs felhasználói tanúsítvány. Töltsön fel CSR-t!</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Common Name</th>
+            <th>Gyökér tanúsítvány</th>
+            <th>Sorozatszám</th>
+            <th>Érvényes ig</th>
+            <th>Státusz</th>
+            <th>Műveletek</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cert of page().content; track cert.id) {
+            <tr>
+              <td><strong>{{ cert.commonName }}</strong></td>
+              <td>{{ rootCertName(cert.rootCertificateId) }}</td>
+              <td><code>{{ cert.serialNumber }}</code></td>
+              <td>{{ cert.validTo | date:'yyyy-MM-dd' }}</td>
+              <td>
+                <span class="badge" [ngClass]="statusClass(cert.status)">
+                  {{ statusLabel(cert.status) }}
+                </span>
+              </td>
+              <td class="actions">
+                <button class="btn btn-sm btn-secondary" (click)="onDownload(cert)" title="PEM letöltése">
+                  ⬇ PEM
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="onDelete(cert)" title="Törlés">
+                  🗑
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <span class="pagination-info">
+        {{ page().totalElements }} elem, {{ page().totalPages }} oldal
+      </span>
+      <div class="pagination-controls">
+        <button class="btn btn-sm btn-secondary" [disabled]="page().first" (click)="goToPage(currentPage() - 1)">
+          ‹ Előző
+        </button>
+        @for (p of pages; track p) {
+          <button
+            class="btn btn-sm"
+            [class.btn-primary]="p === currentPage()"
+            [class.btn-secondary]="p !== currentPage()"
+            (click)="goToPage(p)">
+            {{ p + 1 }}
+          </button>
+        }
+        <button class="btn btn-sm btn-secondary" [disabled]="page().last" (click)="goToPage(currentPage() + 1)">
+          Következő ›
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
