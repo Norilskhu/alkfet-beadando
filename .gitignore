@@ -1,28 +1,117 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
+# =============================================
+# Angular / Node.js (alkfet-fe)
+# =============================================
+
+# Compiled output
+/alkfet-fe/dist/
+/alkfet-fe/tmp/
+/alkfet-fe/out-tsc/
+/alkfet-fe/bazel-out/
+
+# Angular cache
+/alkfet-fe/.angular/
 .angular/
 
 # Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
+**/node_modules/
+/alkfet-fe/npm-debug.log
+/alkfet-fe/yarn-error.log
+package-lock.json
+yarn.lock
 
-# Environment files
-/.env
+# Coverage
+/alkfet-fe/coverage/
 
-# Angular CLI and build artefacts
-/.angular-cli.json
-/.ng/
-
-# TypeScript cache
+# Miscellaneous Angular
+/alkfet-fe/.sass-cache/
+/alkfet-fe/connect.lock
+/alkfet-fe/libpeerconnection.log
+/alkfet-fe/testem.log
+/alkfet-fe/typings/
+/alkfet-fe/__screenshots__/
 *.tsbuildinfo
 
-# Logs
+# =============================================
+# Spring Boot / Maven (alkfet-*-svc)
+# =============================================
+
+# Maven build output
+**/target/
+**/build/
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Maven wrapper jar
+**/.mvn/wrapper/maven-wrapper.jar
+
+# Spring Tool Suite (STS)
+**/.apt_generated
+**/.factorypath
+**/.springBeans
+**/.sts4-cache
+
+# NetBeans
+**/nbproject/private/
+**/nbbuild/
+**/nbdist/
+**/.nb-gradle/
+
+# =============================================
+# IDEs és szerkesztők
+# =============================================
+
+# IntelliJ IDEA
+.idea/
+**/.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse / STS
+**/.classpath
+**/.project
+**/.settings/
+**/.c9/
+**/*.launch
+**/*.sublime-workspace
+
+# Visual Studio Code
+**/.vscode/
+!**/.vscode/settings.json
+!**/.vscode/tasks.json
+!**/.vscode/launch.json
+!**/.vscode/extensions.json
+!**/.vscode/mcp.json
+**/.history/
+
+# =============================================
+# Környezeti és konfigurációs fájlok
+# =============================================
+
+.env
+**/.env
+
+# =============================================
+# Operációs rendszer fájlok
+# =============================================
+
+.DS_Store
+Thumbs.db
+
+# =============================================
+# Naplófájlok
+# =============================================
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# =============================================
+# Egyéb
+# =============================================
+
+/tmp/
+/coverage/
+/e2e/test-output/
