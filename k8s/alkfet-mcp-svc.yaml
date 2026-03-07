@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alkfet-mcp-svc
+  namespace: alkfet
+  labels:
+    app: alkfet-mcp-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alkfet-mcp-svc
+  template:
+    metadata:
+      labels:
+        app: alkfet-mcp-svc
+    spec:
+      containers:
+        - name: alkfet-mcp-svc
+          image: ghcr.io/norilskhu/alkfet-beadando/alkfet-mcp-svc:latest
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SERVER_PORT
+              value: "8085"
+            - name: APP_DB-SVC_BASE-URL
+              value: "http://alkfet-db-svc:8081"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            initialDelaySeconds: 60
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alkfet-mcp-svc
+  namespace: alkfet
+spec:
+  selector:
+    app: alkfet-mcp-svc
+  ports:
+    - protocol: TCP
+      port: 8085
+      targetPort: 8085
+
