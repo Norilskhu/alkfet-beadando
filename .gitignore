@@ -16,8 +16,6 @@
 **/node_modules/
 /alkfet-fe/npm-debug.log
 /alkfet-fe/yarn-error.log
-package-lock.json
-yarn.lock
 
 # Coverage
 /alkfet-fe/coverage/
