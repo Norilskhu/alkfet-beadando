@@ -8,7 +8,7 @@ spring:
         version: 1.0.0
 
 server:
-  port: 8082
+  port: 8085
 
 app:
   db-svc:
