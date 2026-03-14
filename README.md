@@ -1,4 +1,4 @@
-# GUIDE.md — használati útmutató
+# README.md — használati útmutató
 
 ## Áttekintés
 
