@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "alkfet-mcp-server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:8085/sse"
+      ]
+    }
+  }
+}
+
